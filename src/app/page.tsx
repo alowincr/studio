@@ -2,15 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Code,
   Mail,
-  ListChecks,
-  ShoppingCart,
-  LineChart,
   Github,
   ExternalLink,
   Codepen,
@@ -28,7 +26,6 @@ import {
   Menu,
   X,
   ArrowUp,
-  User,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -141,7 +138,8 @@ export default function Home() {
 
   const projects = [
     {
-      icon: <ListChecks className="w-16 h-16" />,
+      image: "https://placehold.co/600x400.png",
+      aiHint: "task manager",
       title: "Sistema de Gestión de Tareas",
       description: "Aplicación web completa para gestión de proyectos y tareas con interfaz intuitiva, notificaciones en tiempo real y dashboard analítico.",
       tech: ["React", "Node.js", "MongoDB", "Socket.io"],
@@ -149,7 +147,8 @@ export default function Home() {
       demoLink: "#",
     },
     {
-      icon: <ShoppingCart className="w-16 h-16" />,
+      image: "https://placehold.co/600x400.png",
+      aiHint: "ecommerce website",
       title: "E-commerce Platform",
       description: "Plataforma de comercio electrónico con sistema de pagos integrado, gestión de inventario y panel administrativo completo.",
       tech: ["Next.js", "TypeScript", "PostgreSQL", "Stripe"],
@@ -157,7 +156,8 @@ export default function Home() {
       demoLink: "#",
     },
     {
-      icon: <LineChart className="w-16 h-16" />,
+      image: "https://placehold.co/600x400.png",
+      aiHint: "analytics dashboard",
       title: "Dashboard Analítico",
       description: "Dashboard interactivo para visualización de datos empresariales con gráficos dinámicos y reportes en tiempo real.",
       tech: ["Vue.js", "D3.js", "Python", "FastAPI"],
@@ -254,12 +254,18 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex justify-center items-center">
-                <div className="relative w-72 h-72 md:w-80 md:h-80">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full animate-[spin_20s_linear_infinite]"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full filter blur-2xl opacity-50 animate-pulse"></div>
-                  <div className="absolute inset-1.5 bg-background rounded-full flex items-center justify-center">
-                    <User className="w-40 h-40 text-gray-500" />
-                  </div>
+                <div className="relative w-72 h-72 md:w-80 md:h-80 group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500"></div>
+                    <div className="relative w-full h-full">
+                        <Image
+                            src="https://placehold.co/320x320.png"
+                            data-ai-hint="profile picture"
+                            alt="Foto de perfil de Alonso Carbajal"
+                            width={320}
+                            height={320}
+                            className="rounded-full object-cover border-4 border-background"
+                        />
+                    </div>
                 </div>
               </div>
             </div>
@@ -276,26 +282,34 @@ export default function Home() {
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map((project, index) => (
-                <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
+                  <div className="relative aspect-[3/2] w-full">
+                    <Image
+                      src={project.image}
+                      data-ai-hint={project.aiHint}
+                      alt={`Imagen del proyecto ${project.title}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   <CardHeader>
-                    <div className="h-32 flex items-center justify-center text-primary bg-primary/10 rounded-lg">
-                      {project.icon}
-                    </div>
-                    <CardTitle className="pt-4 font-headline">{project.title}</CardTitle>
+                    <CardTitle className="font-headline">{project.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-grow">
                     <CardDescription>{project.description}</CardDescription>
                     <div className="flex flex-wrap gap-2 mt-4">
                       {project.tech.map(t => <span key={t} className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">{t}</span>)}
                     </div>
                   </CardContent>
-                  <CardFooter className="flex space-x-4">
-                    <Button asChild variant="outline" className="w-full">
-                      <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
-                    </Button>
-                    <Button asChild className="w-full">
-                      <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
-                    </Button>
+                  <CardFooter>
+                    <div className="flex space-x-4 w-full">
+                      <Button asChild variant="outline" className="w-full">
+                        <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
+                      </Button>
+                      <Button asChild className="w-full">
+                        <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
+                      </Button>
+                    </div>
                   </CardFooter>
                 </Card>
               ))}
