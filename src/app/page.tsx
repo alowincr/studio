@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -54,7 +53,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { submitContactForm } from "./actions";
 import ParticlesBackground from "@/components/particles-background";
-import PersonalizeSection from "@/components/personalize-section";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -89,7 +87,7 @@ export default function Home() {
     if (result.success) {
       toast({
         title: "¡Mensaje Enviado!",
-        description: "Gracias por contactarme. Te responderé pronto.",
+        description: result.message,
       });
       form.reset();
     } else {
@@ -180,7 +178,7 @@ export default function Home() {
   ];
 
   const contactMethods = [
-    { icon: <Mail />, title: "Email", value: "alonso@email.com", href: "mailto:alonso@email.com" },
+    { icon: <Mail />, title: "Email", value: "alonsocarbajalarc215@gmail.com", href: "#contacto" },
     { icon: <Phone />, title: "Teléfono", value: "+51 987 654 321", href: "tel:+51987654321" },
     { icon: <Linkedin />, title: "LinkedIn", value: "linkedin.com/in/alonso-carbajal", href: "https://www.linkedin.com/in/alonso-carbajal-b10901212/" },
     { icon: <Github />, title: "GitHub", value: "github.com/alowincr", href: "https://github.com/alowincr" },
@@ -196,7 +194,6 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <ParticlesBackground />
-      <PersonalizeSection />
 
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isHeaderScrolled ? "bg-background/80 backdrop-blur-sm border-b border-white/10" : "bg-transparent"}`}>
         <div className="container mx-auto px-4">

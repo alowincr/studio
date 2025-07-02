@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { sendContactEmail } from "@/ai/flows/send-contact-email";
 
 const contactFormSchema = z.object({
   name: z.string(),
@@ -16,12 +17,11 @@ export async function submitContactForm(values: z.infer<typeof contactFormSchema
     return { success: false, message: "Datos inválidos." };
   }
 
-  // Here you would typically send an email using a service like Resend, SendGrid, etc.
-  // For this example, we'll just simulate a successful submission.
-  console.log("Form submitted:", parsed.data);
-
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  return { success: true, message: "¡Mensaje enviado con éxito!" };
+  try {
+    const result = await sendContactEmail(parsed.data);
+    return result;
+  } catch (error) {
+    console.error("Error submitting contact form:", error);
+    return { success: false, message: "Hubo un error al conectar con el servicio de IA. Intenta de nuevo." };
+  }
 }
