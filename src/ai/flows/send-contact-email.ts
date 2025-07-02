@@ -32,18 +32,26 @@ const prompt = ai.definePrompt({
   name: 'sendContactEmailPrompt',
   input: {schema: ContactFormInputSchema},
   output: {schema: ContactFormOutputSchema},
-  prompt: `You are a virtual assistant responsible for processing contact form submissions for a personal portfolio. Your task is to simulate sending an email to the portfolio owner, Alonso Carbajal, at alonsocarbajalarc215@gmail.com.
+  prompt: `You are a virtual assistant for a personal portfolio. Your task is to process contact form submissions.
 
-  Do NOT actually send an email. This is a simulation.
+You will receive the following data:
+- From Name: {{{name}}}
+- From Email: {{{email}}}
+- Subject: {{{subject}}}
+- Message: {{{message}}}
 
-  The details from the form are as follows:
-  - From Name: {{{name}}}
-  - From Email: {{{email}}}
-  - Subject: {{{subject}}}
-  - Message: {{{message}}}
+You MUST respond with a JSON object that strictly adheres to the following structure:
+{
+  "success": boolean,
+  "message": "string"
+}
 
-  Your response should be a simple confirmation. Respond in Spanish. Set the success field to true and provide a friendly confirmation message. For example: "¡Gracias, {{name}}! Tu mensaje ha sido enviado. Alonso se pondrá en contacto contigo pronto."
-  `,
+Based on the input, generate a response.
+The response language must be Spanish.
+Set the 'success' field to \`true\`.
+For the 'message' field, create a friendly confirmation message to the user.
+Example confirmation message: "¡Gracias, {{{name}}}! Tu mensaje ha sido enviado. Alonso se pondrá en contacto contigo pronto."
+Do NOT include any text or markdown formatting outside of the JSON object.`,
 });
 
 const sendContactEmailFlow = ai.defineFlow(
@@ -54,7 +62,10 @@ const sendContactEmailFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    // The prompt is designed to always return a valid output, so we can use the non-null assertion.
-    return output!;
+    if (!output) {
+      console.error("AI response was null or failed to parse.", {input});
+      throw new Error("The AI model did not return a valid output that matches the schema.");
+    }
+    return output;
   }
 );
