@@ -26,6 +26,9 @@ import {
   Menu,
   X,
   ArrowUp,
+  LayoutTemplate,
+  ServerCog,
+  PenTool,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -133,6 +136,7 @@ export default function Home() {
     { href: "#inicio", label: "Inicio" },
     { href: "#proyectos", label: "Proyectos" },
     { href: "#habilidades", label: "Habilidades" },
+    { href: "#servicios", label: "Servicios" },
     { href: "#contacto", label: "Contacto" },
   ];
 
@@ -175,6 +179,24 @@ export default function Home() {
     { icon: <Code />, name: "Python", level: "Avanzado" },
     { icon: <Database />, name: "MongoDB", level: "Intermedio" },
     { icon: <GitMerge />, name: "Git", level: "Avanzado" },
+  ];
+  
+  const services = [
+    {
+      icon: <LayoutTemplate />,
+      title: "Desarrollo Frontend",
+      description: "Creación de interfaces de usuario interactivas y responsivas con las últimas tecnologías como React y Next.js.",
+    },
+    {
+      icon: <ServerCog />,
+      title: "Desarrollo Backend",
+      description: "Diseño y construcción de APIs robustas y escalables, y lógica de servidor con Node.js, Python y bases de datos.",
+    },
+    {
+      icon: <PenTool />,
+      title: "Diseño UI/UX",
+      description: "Enfoque en la experiencia de usuario para crear diseños intuitivos, funcionales y estéticamente agradables.",
+    },
   ];
 
   const contactMethods = [
@@ -339,7 +361,33 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contacto" ref={(el) => (sectionsRef.current["contacto"] = el)} className="py-20 bg-background/50">
+        <section id="servicios" ref={(el) => (sectionsRef.current["servicios"] = el)} className="py-20 bg-background/50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline">Mis Servicios</h2>
+              <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+                Ofrezco soluciones integrales para llevar tus ideas del concepto a la realidad digital.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => (
+                <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 text-center p-8 transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
+                  <div className="flex justify-center text-primary mb-6">
+                    {React.cloneElement(service.icon, { className: "w-16 h-16" })}
+                  </div>
+                  <CardHeader className="p-0 mb-4">
+                    <CardTitle className="font-headline text-xl">{service.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 flex-grow">
+                    <p className="text-muted-foreground">{service.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contacto" ref={(el) => (sectionsRef.current["contacto"] = el)} className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold font-headline">Contáctame</h2>
