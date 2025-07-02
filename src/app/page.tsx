@@ -53,6 +53,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { submitContactForm } from "./actions";
 import ParticlesBackground from "@/components/particles-background";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -61,12 +62,26 @@ const contactFormSchema = z.object({
   message: z.string().min(10, { message: "El mensaje debe tener al menos 10 caracteres." }),
 });
 
+interface GitHubProject {
+  id: number;
+  image: string;
+  aiHint: string;
+  title: string;
+  description: string | null;
+  tech: string[];
+  codeLink: string;
+  demoLink: string | null;
+}
+
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [typedSubtitle, setTypedSubtitle] = useState("");
+  const [githubProjects, setGithubProjects] = useState<GitHubProject[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+
   const subtitle = "Ingeniero de Sistemas";
   const sectionsRef = useRef<Record<string, HTMLElement | null>>({});
 
@@ -132,42 +147,40 @@ export default function Home() {
     return () => clearTimeout(typingInterval);
   }, []);
   
+  useEffect(() => {
+    async function fetchGithubProjects() {
+      try {
+        const response = await fetch("https://api.github.com/users/alowincr/repos?sort=updated&direction=desc&per_page=3");
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+        const data = await response.json();
+        const formattedProjects: GitHubProject[] = data.map((repo: any) => ({
+          id: repo.id,
+          image: "https://placehold.co/600x400.png",
+          aiHint: "github repository",
+          title: repo.name.replace(/-/g, ' ').replace(/_/g, ' '),
+          description: repo.description,
+          tech: repo.language ? [repo.language] : [],
+          codeLink: repo.html_url,
+          demoLink: repo.homepage,
+        }));
+        setGithubProjects(formattedProjects);
+      } catch (error) {
+        console.error("Error fetching GitHub projects:", error);
+      } finally {
+        setIsLoadingProjects(false);
+      }
+    }
+    fetchGithubProjects();
+  }, []);
+
   const navLinks = [
     { href: "#inicio", label: "Inicio" },
     { href: "#proyectos", label: "Proyectos" },
     { href: "#habilidades", label: "Habilidades" },
     { href: "#servicios", label: "Servicios" },
     { href: "#contacto", label: "Contacto" },
-  ];
-
-  const projects = [
-    {
-      image: "https://placehold.co/600x400.png",
-      aiHint: "task manager",
-      title: "Sistema de Gestión de Tareas",
-      description: "Aplicación web completa para gestión de proyectos y tareas con interfaz intuitiva, notificaciones en tiempo real y dashboard analítico.",
-      tech: ["React", "Node.js", "MongoDB", "Socket.io"],
-      codeLink: "#",
-      demoLink: "#",
-    },
-    {
-      image: "https://placehold.co/600x400.png",
-      aiHint: "ecommerce website",
-      title: "E-commerce Platform",
-      description: "Plataforma de comercio electrónico con sistema de pagos integrado, gestión de inventario y panel administrativo completo.",
-      tech: ["Next.js", "TypeScript", "PostgreSQL", "Stripe"],
-      codeLink: "#",
-      demoLink: "#",
-    },
-    {
-      image: "https://placehold.co/600x400.png",
-      aiHint: "analytics dashboard",
-      title: "Dashboard Analítico",
-      description: "Dashboard interactivo para visualización de datos empresariales con gráficos dinámicos y reportes en tiempo real.",
-      tech: ["Vue.js", "D3.js", "Python", "FastAPI"],
-      codeLink: "#",
-      demoLink: "#",
-    },
   ];
 
   const skills = [
@@ -297,44 +310,72 @@ export default function Home() {
         <section id="proyectos" ref={(el) => (sectionsRef.current["proyectos"] = el)} className="py-20 bg-background/50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold font-headline">Proyectos Destacados</h2>
+              <h2 className="text-4xl font-bold font-headline">Proyectos Recientes</h2>
               <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
-                Algunos de los proyectos en los que he trabajado, desde aplicaciones web hasta sistemas completos de gestión.
+                Estos son mis últimos proyectos en GitHub. ¡Siempre estoy trabajando en algo nuevo!
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((project, index) => (
-                <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
-                  <div className="relative aspect-[3/2] w-full">
-                    <Image
-                      src={project.image}
-                      data-ai-hint={project.aiHint}
-                      alt={`Imagen del proyecto ${project.title}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="font-headline">{project.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <CardDescription>{project.description}</CardDescription>
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {project.tech.map(t => <span key={t} className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">{t}</span>)}
+              {isLoadingProjects ? (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden flex flex-col">
+                    <Skeleton className="aspect-[3/2] w-full" />
+                    <CardHeader>
+                      <Skeleton className="h-6 w-3/4 rounded-md" />
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-2">
+                      <Skeleton className="h-4 w-full rounded-md" />
+                      <Skeleton className="h-4 w-5/6 rounded-md" />
+                      <div className="flex flex-wrap gap-2 mt-4 pt-2">
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <div className="flex space-x-4 w-full">
+                        <Skeleton className="h-11 w-full rounded-md" />
+                        <Skeleton className="h-11 w-full rounded-md" />
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : githubProjects.length > 0 ? (
+                githubProjects.map((project) => (
+                  <Card key={project.id} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
+                    <div className="relative aspect-[3/2] w-full">
+                      <Image
+                        src={project.image}
+                        data-ai-hint={project.aiHint}
+                        alt={`Imagen del proyecto ${project.title}`}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                  </CardContent>
-                  <CardFooter>
-                    <div className="flex space-x-4 w-full">
-                      <Button asChild variant="outline" className="w-full">
-                        <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
-                      </Button>
-                      <Button asChild className="w-full">
-                        <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))}
+                    <CardHeader>
+                      <CardTitle className="font-headline capitalize">{project.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <CardDescription>{project.description || 'No hay descripción disponible para este proyecto.'}</CardDescription>
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {project.tech.map(t => <span key={t} className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">{t}</span>)}
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <div className="flex space-x-4 w-full">
+                        <Button asChild variant="outline" className="w-full">
+                          <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
+                        </Button>
+                        {project.demoLink && (
+                          <Button asChild className="w-full">
+                            <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
+                          </Button>
+                        )}
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <p className="col-span-full text-center text-gray-400">No se pudieron cargar los proyectos de GitHub.</p>
+              )}
             </div>
           </div>
         </section>
