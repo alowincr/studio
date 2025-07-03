@@ -53,7 +53,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { submitContactForm } from "./actions";
 import ParticlesBackground from "@/components/particles-background";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -62,7 +61,7 @@ const contactFormSchema = z.object({
   message: z.string().min(10, { message: "El mensaje debe tener al menos 10 caracteres." }),
 });
 
-interface GitHubProject {
+interface Project {
   id: number;
   image: string;
   aiHint: string;
@@ -79,9 +78,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("inicio");
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [typedSubtitle, setTypedSubtitle] = useState("");
-  const [githubProjects, setGithubProjects] = useState<GitHubProject[]>([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-
+  
   const subtitle = "Ingeniero de Sistemas";
   const sectionsRef = useRef<Record<string, HTMLElement | null>>({});
 
@@ -147,34 +144,6 @@ export default function Home() {
     return () => clearTimeout(typingInterval);
   }, []);
   
-  useEffect(() => {
-    async function fetchGithubProjects() {
-      try {
-        const response = await fetch("https://api.github.com/users/alowincr/repos?sort=updated&direction=desc&per_page=3");
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
-        }
-        const data = await response.json();
-        const formattedProjects: GitHubProject[] = data.map((repo: any) => ({
-          id: repo.id,
-          image: "https://placehold.co/600x400.png",
-          aiHint: "github repository",
-          title: repo.name.replace(/-/g, ' ').replace(/_/g, ' '),
-          description: repo.description,
-          tech: repo.language ? [repo.language] : [],
-          codeLink: repo.html_url,
-          demoLink: repo.homepage,
-        }));
-        setGithubProjects(formattedProjects);
-      } catch (error) {
-        console.error("Error fetching GitHub projects:", error);
-      } finally {
-        setIsLoadingProjects(false);
-      }
-    }
-    fetchGithubProjects();
-  }, []);
-
   const navLinks = [
     { href: "#inicio", label: "Inicio" },
     { href: "#proyectos", label: "Proyectos" },
@@ -182,16 +151,29 @@ export default function Home() {
     { href: "#servicios", label: "Servicios" },
     { href: "#contacto", label: "Contacto" },
   ];
+  
+  const projects: Project[] = [
+    {
+      id: 1,
+      image: "https://placehold.co/600x400.png",
+      aiHint: "inventory management system",
+      title: "AlmaZen Inventario",
+      description: "AlmaZen es una interfaz web para gestionar almacenes, creada con JSP, JavaScript y CSS. Incluye secciones como inventario, empleados y ventas. Proyecto en desarrollo abierto a colaboradores.",
+      tech: ["Java"],
+      codeLink: "https://github.com/alowincr",
+      demoLink: null,
+    }
+  ];
 
   const skills = [
-    { icon: <Codepen />, name: "HTML5", level: "Avanzado" },
-    { icon: <Palette />, name: "CSS3", level: "Avanzado" },
-    { icon: <FileCode />, name: "JavaScript", level: "Avanzado" },
+    { icon: <Codepen />, name: "HTML", level: "Intermedio" },
+    { icon: <Palette />, name: "CSS", level: "Intermedio" },
+    { icon: <FileCode />, name: "JavaScript", level: "Intermedio" },
     { icon: <Atom />, name: "React", level: "Intermedio" },
     { icon: <Server />, name: "Node.js", level: "Intermedio" },
     { icon: <Code />, name: "Python", level: "Avanzado" },
-    { icon: <Database />, name: "MongoDB", level: "Intermedio" },
-    { icon: <GitMerge />, name: "Git", level: "Avanzado" },
+    { icon: <Code />, name: "Java", level: "Intermedio" },
+    { icon: <GitMerge />, name: "Git", level: "Intermedio" },
   ];
   
   const services = [
@@ -212,18 +194,9 @@ export default function Home() {
     },
   ];
 
-  const contactMethods = [
-    { icon: <Mail />, title: "Email", value: "alonsocarbajalarc215@gmail.com", href: "#contacto" },
-    { icon: <Phone />, title: "Teléfono", value: "+51 987 654 321", href: "tel:+51987654321" },
-    { icon: <Linkedin />, title: "LinkedIn", value: "linkedin.com/in/alonso-carbajal", href: "https://www.linkedin.com/in/alonso-carbajal-b10901212/" },
-    { icon: <Github />, title: "GitHub", value: "github.com/alowincr", href: "https://github.com/alowincr" },
-  ];
-
   const socialLinks = [
     { icon: <Github />, href: "https://github.com/alowincr" },
     { icon: <Linkedin />, href: "https://www.linkedin.com/in/alonso-carbajal-b10901212/" },
-    { icon: <Twitter />, href: "#" },
-    { icon: <Instagram />, href: "#" },
   ];
 
   return (
@@ -315,67 +288,41 @@ export default function Home() {
                 Estos son mis últimos proyectos en GitHub. ¡Siempre estoy trabajando en algo nuevo!
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {isLoadingProjects ? (
-                Array.from({ length: 3 }).map((_, index) => (
-                  <Card key={index} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden flex flex-col">
-                    <Skeleton className="aspect-[3/2] w-full" />
-                    <CardHeader>
-                      <Skeleton className="h-6 w-3/4 rounded-md" />
-                    </CardHeader>
-                    <CardContent className="flex-grow space-y-2">
-                      <Skeleton className="h-4 w-full rounded-md" />
-                      <Skeleton className="h-4 w-5/6 rounded-md" />
-                      <div className="flex flex-wrap gap-2 mt-4 pt-2">
-                        <Skeleton className="h-6 w-20 rounded-full" />
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <div className="flex space-x-4 w-full">
-                        <Skeleton className="h-11 w-full rounded-md" />
-                        <Skeleton className="h-11 w-full rounded-md" />
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
-              ) : githubProjects.length > 0 ? (
-                githubProjects.map((project) => (
-                  <Card key={project.id} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
-                    <div className="relative aspect-[3/2] w-full">
-                      <Image
-                        src={project.image}
-                        data-ai-hint={project.aiHint}
-                        alt={`Imagen del proyecto ${project.title}`}
-                        fill
-                        className="object-cover"
-                      />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+              {projects.map((project) => (
+                <Card key={project.id} className="bg-card/80 backdrop-blur-sm border-white/10 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 flex flex-col max-w-sm mx-auto">
+                  <div className="relative aspect-[3/2] w-full">
+                    <Image
+                      src={project.image}
+                      data-ai-hint={project.aiHint}
+                      alt={`Imagen del proyecto ${project.title}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="font-headline capitalize">{project.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <CardDescription>{project.description}</CardDescription>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {project.tech.map(t => <span key={t} className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">{t}</span>)}
                     </div>
-                    <CardHeader>
-                      <CardTitle className="font-headline capitalize">{project.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                      <CardDescription>{project.description || 'No hay descripción disponible para este proyecto.'}</CardDescription>
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {project.tech.map(t => <span key={t} className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">{t}</span>)}
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <div className="flex space-x-4 w-full">
-                        <Button asChild variant="outline" className="w-full">
-                          <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
+                  </CardContent>
+                  <CardFooter>
+                    <div className="flex space-x-4 w-full">
+                      <Button asChild variant="outline" className="w-full">
+                        <a href={project.codeLink} target="_blank" rel="noopener noreferrer"><Github /> Código</a>
+                      </Button>
+                      {project.demoLink && (
+                        <Button asChild className="w-full">
+                          <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
                         </Button>
-                        {project.demoLink && (
-                          <Button asChild className="w-full">
-                            <a href={project.demoLink} target="_blank" rel="noopener noreferrer"><ExternalLink /> Demo</a>
-                          </Button>
-                        )}
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
-              ) : (
-                <p className="col-span-full text-center text-gray-400">No se pudieron cargar los proyectos de GitHub.</p>
-              )}
+                      )}
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
@@ -436,25 +383,7 @@ export default function Home() {
                 ¿Tienes un proyecto en mente? Me encantaría escuchar sobre él y ver cómo podemos trabajar juntos.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-12 items-start">
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold font-headline">Hablemos</h3>
-                <p className="text-gray-400">
-                  Estoy siempre abierto a discutir nuevas oportunidades, proyectos interesantes o simplemente charlar sobre tecnología.
-                </p>
-                <div className="space-y-4">
-                  {contactMethods.map(method => (
-                    <a key={method.title} href={method.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-card/80 border border-white/10 rounded-lg hover:border-primary transition-colors">
-                      <div className="text-primary">{method.icon}</div>
-                      <div>
-                        <strong className="font-headline">{method.title}</strong>
-                        <p className="text-sm text-gray-400">{method.value}</p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-              
+            <div className="max-w-2xl mx-auto">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-8 bg-card/80 border border-white/10 rounded-lg">
                   <FormField control={form.control} name="name" render={({ field }) => (
