@@ -154,6 +154,16 @@ export default function Home() {
   
   const projects: Project[] = [
     {
+      id: 2,
+      image: "https://placehold.co/600x400.png",
+      aiHint: "weather forecast app",
+      title: "Weathery",
+      description: "Una aplicación del clima simple y elegante que muestra el pronóstico actual y futuro, construida con tecnologías web modernas.",
+      tech: ["React", "API"],
+      codeLink: "https://github.com/alowincr/weathery",
+      demoLink: null,
+    },
+    {
       id: 1,
       image: "https://placehold.co/600x400.png",
       aiHint: "inventory management system",
@@ -241,11 +251,11 @@ export default function Home() {
           <div className="container mx-auto px-4 z-10">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div className="space-y-4 text-center md:text-left">
-                <p className="font-code text-accent">👋 Hola, soy</p>
+                <p className="text-lg text-gray-300">Hola, soy</p>
                 <h1 className="text-4xl md:text-6xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent leading-tight">
                   Alonso Carbajal
                 </h1>
-                <h2 className="text-2xl font-semibold text-gray-300 h-8">
+                <h2 className="text-2xl font-semibold text-gray-300 min-h-8">
                   <span className="font-code">{typedSubtitle}</span>
                   <span className="animate-ping">_</span>
                 </h2>
