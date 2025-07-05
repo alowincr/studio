@@ -159,7 +159,7 @@ export default function Home() {
       aiHint: "weather forecast app",
       title: "Weathery",
       description: "Una aplicación del clima simple y elegante que muestra el pronóstico actual y futuro, construida con tecnologías web modernas.",
-      tech: ["React", "API"],
+      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "GSAP"],
       codeLink: "https://github.com/alowincr/weathery",
       demoLink: null,
     },
@@ -168,9 +168,9 @@ export default function Home() {
       image: "https://placehold.co/600x400.png",
       aiHint: "inventory management system",
       title: "AlmaZen Inventario",
-      description: "AlmaZen es una interfaz web para gestionar almacenes, creada con JSP, JavaScript y CSS. Incluye secciones como inventario, empleados y ventas. Proyecto en desarrollo abierto a colaboradores.",
-      tech: ["Java"],
-      codeLink: "https://github.com/alowincr",
+      description: "AlmaZen es una interfaz web para gestionar almacenes, incluye secciones como inventario, empleados y ventas. Proyecto en desarrollo abierto a colaboradores.",
+      tech: ["Java", "JavaScript", "CSS"],
+      codeLink: "https://github.com/alowincr/AlmaZen-Inventario",
       demoLink: null,
     }
   ];
